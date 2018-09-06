@@ -26,6 +26,8 @@ module.exports = app => {
   router.post('/weixin/saveApi', controller.weixin.saveApi); //保存Api
   router.post('/weixin/deleteApi', controller.weixin.deleteApi); //删除Api
   router.post('/weixin/deleteComponent', controller.weixin.deleteComponent); //删除Component
+  router.post('/weixin/uploadImage', controller.weixin.uploadImage); //上传效果图
+  router.post('/weixin/deleteImage', controller.weixin.deleteImage); //删除效果图
   
   router.get('/api/admin/album', controller.home.album);
   router.get('/api/mini/fansList', controller.mini.fansList);

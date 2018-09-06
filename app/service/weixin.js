@@ -1,5 +1,7 @@
 'use strict';
-
+const path = require('path');
+const fs = require('fs');
+const sendToWormhole = require('stream-wormhole');
 const Service = require('egg').Service;
 const crypto = require('crypto');
 
@@ -133,7 +135,6 @@ class WeixinService extends Service {
           param: params.param
         }
       })
-      console.log(common, 'update')
       if (common.length > 1) {
         return {
           code: '0001',
@@ -173,7 +174,6 @@ class WeixinService extends Service {
           param: params.param
         }
       })
-      console.log(common, 'insert')
       if (common.length > 0) {
         return {
           code: '0001',
@@ -239,6 +239,96 @@ class WeixinService extends Service {
       return {
         code: '0001',
         msg: '组件未成功删除'
+      }
+    }
+  }
+  // 上传效果图
+  async uploadImage (ctx) {
+    const stream = await ctx.getFileStream();
+    const filename = path.basename(stream.filename);
+    const componentId = path.basename(stream.fields.componentId);
+    let target  = path.join('/Users/cs/Desktop/workspace/', filename);
+    let url = path.join('/image/weixin/', filename);
+    const result = await new Promise((resolve, reject) => {
+        const remoteFileStream = fs.createWriteStream(target);
+        stream.pipe(remoteFileStream);
+        let errFlag;
+        remoteFileStream.on('error', err => {
+            errFlag = true;
+            sendToWormhole(stream);
+            remoteFileStream.destroy();
+            resolve({
+              code: '0001',
+              msg: err
+            });
+        });
+        remoteFileStream.on('finish', async () => {
+            if (errFlag) return;
+            let detail = await this.WEIXIN.select('components', {
+              where: {
+                id: componentId
+              },
+              columns: ['images']
+            });
+            if (detail[0].images === null) {
+              detail[0].images = url
+            } else if (detail[0].images.indexOf(url) <= -1) {
+              detail[0].images += (',' + url)
+            }
+            let d = await this.WEIXIN.update('components', {
+              images: detail[0].images
+            }, {
+              where: {
+                id: componentId
+              }
+            })
+            if (d.affectedRows === 1) {
+              resolve({
+                code: '0000',
+                msg: null,
+                list: detail[0].images
+              });
+            } else {
+              resolve({
+                code: '0001',
+                msg: '数据库未更新成功'
+              });
+            }
+        });
+      });
+    return result;
+  }
+  // 删除效果图
+  async deleteImage (params) {
+    let name = params.name;
+    let componentId = params.componentId;
+    let target  = path.join('/static/image/weixin/', name);
+    let url = path.join('/image/weixin/', name);
+    let result = await this.WEIXIN.select('components', {
+      where: {id: componentId},
+      columns: ['images']
+    })
+    result[0].images = result[0].images.replace(url, '');
+    const detail = await this.WEIXIN.update('components', {
+      images: result[0].images
+    }, {
+      where: {
+        id: componentId
+      }
+    });
+    fs.unlinkSync(target, (err) => {
+      console.log(err)
+    })
+    if (detail.affectedRows === 1) {
+      return {
+        code: '0000',
+        msg: null,
+        list: result[0].images
+      }
+    } else {
+      return {
+        code: '0001',
+        msg: '数据库未更新成功'
       }
     }
   }

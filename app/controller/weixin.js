@@ -1,5 +1,4 @@
 'use strict';
-
 const Controller = require('egg').Controller;
 class WeixinController extends Controller {
   // 生成随机token
@@ -18,7 +17,6 @@ class WeixinController extends Controller {
   //初始化接口
   async init (ctx) {
     let csrfToken = ctx.request.header.cookie;
-    console.log(csrfToken)
     // let csrfToken = ctx.cookies.get('csrfToken');
     // ctx.cookies.set('csrfToken', 'yh2GHvCPIBvOG2nw6fI9sGDU');
     // ctx.session.csrfToken = 'yh2GHvCPIBvOG2nw6fI9sGDU';
@@ -79,6 +77,17 @@ class WeixinController extends Controller {
     const params = ctx.request.body;
     let id = params.id || '';
     const result = await ctx.service.weixin.deleteComponent(id);
+    ctx.body = result;
+  }
+  // 上传效果图
+  async uploadImage (ctx) {
+    const result = await ctx.service.weixin.uploadImage(ctx);
+    ctx.body = result;
+  }
+  // 删除效果图
+  async deleteImage (ctx) {
+    const params = ctx.request.body;
+    const result = await ctx.service.weixin.deleteImage(params);
     ctx.body = result;
   }
 }
