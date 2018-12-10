@@ -28,6 +28,13 @@ class KukaController extends Controller {
     const result = await ctx.service.kuka.createUser(params);
     ctx.body = result;
   }
+  //获取用户
+  async getUser(ctx) {
+    const query = ctx.query;
+    const name = query.name || '';
+    const result = await ctx.service.kuka.getUser(name);
+    ctx.body = result;
+  }
   //查询产品列表
   async product(ctx) {
     const query = ctx.query;

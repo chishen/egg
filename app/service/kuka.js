@@ -60,6 +60,27 @@ class KukaService extends Service {
     }
     return result
   }
+  //获取用户
+  async getUser(name) {
+    let detail = await this.KUKA.select('user', {
+      where: {
+        nickName: name
+      },
+      columns: ['user_id']
+    });
+    if (detail.length) {
+      return {
+        code: '0000',
+        msg: null,
+        user_id: detail[0].user_id
+      }
+    } else {
+      return {
+        code: '0001',
+        msg: '未查到该用户'
+      }
+    }
+  }
   //查询产品列表
   async product(name) {
     let sql = 'select * from kuka where `product` like "%' + name + '%"';

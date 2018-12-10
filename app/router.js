@@ -7,9 +7,13 @@ module.exports = app => {
   const { router, controller } = app;
   // router.get('/',controller.home.index);
 
+  // 管理系统接口
+  router.post('/manage/postLogin', controller.manage.postLogin); //登录
+
   //顾家数据接口
   router.get('/kuka/init', controller.kuka.init); //初始化接口
   router.post('/kuka/createUser', controller.kuka.createUser); //创建用户
+  router.get('/kuka/getUser', controller.kuka.getUser); //获取用户
   router.get('/kuka/product', controller.kuka.product); //查询产品列表
   router.post('/kuka/addGuest', controller.kuka.addGuest); //新增客户
   router.get('/kuka/guestList', controller.kuka.guestList); //查询客户列表
