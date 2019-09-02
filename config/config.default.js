@@ -18,6 +18,12 @@ module.exports = appInfo => {
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1530756840596_8101';
 
+  config.alinode = {
+    // 从 `Node.js 性能平台` 获取对应的接入参数
+    appid: '81384',
+    secret: '31e4d63ff053dfa91ddb721d47b372b3b2fa2c76',
+  };
+
   // add your config here
   config.middleware = [];
   config.mysql = {

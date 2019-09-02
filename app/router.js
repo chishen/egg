@@ -9,6 +9,7 @@ module.exports = app => {
 
   // 管理系统接口
   router.post('/manage/postLogin', controller.manage.postLogin); //登录
+  router.get('/manage/getData', controller.manage.getData); //获取数据
 
   //顾家数据接口
   router.get('/kuka/init', controller.kuka.init); //初始化接口

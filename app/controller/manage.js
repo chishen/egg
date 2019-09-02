@@ -1,5 +1,6 @@
 'use strict';
 const Controller = require('egg').Controller;
+let token = 'kvs25XKdz4kxGXqfvh1FfT4CmJ64WX8P';
 class ManageController extends Controller {
   // 生成随机token
   randomString (len) {
@@ -13,7 +14,19 @@ class ManageController extends Controller {
     }
     return token;
   }
-
+  // 权限校验
+  verify(ctx) {
+    let t = ctx.cookies.get('token');
+    if(t === token) {
+      return true
+    }else {
+      ctx.body = {
+        code: '0001',
+        msg: '无访问权限'
+      };
+      return false
+    }
+  }
   // 查询组件Api
 //   async getApi (ctx) {
 //     const query = ctx.query;
@@ -23,13 +36,20 @@ class ManageController extends Controller {
 //   }
   // 管理员登录
   async postLogin (ctx) {
-    // const params = ctx.request.body;
-    // console.log(params,999)
-    // const result = await ctx.service.manage.postLogin(params);
-    let csrfToken = this.randomString();
-    ctx.cookies.set('csrfToken', csrfToken);
-    ctx.body = csrfToken;
-    // ctx.body = '111';
+    const params = ctx.request.body;
+    const result = await ctx.service.manage.postLogin(params);
+    if(result.code === '0000'){
+      ctx.cookies.set('token', token,{
+        maxAge: 7*24*3600*1000
+      });
+    }
+    ctx.body = result;
+  }
+  // 获取数据
+  async getData (ctx) {
+    if(this.verify(ctx)) {
+      
+    }
   }
 }
 

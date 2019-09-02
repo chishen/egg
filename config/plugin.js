@@ -8,5 +8,10 @@ exports.mysql = {
   enable: true,
   package: 'egg-mysql',
 };
+
+exports.alinode = {
+  enable: true,
+  package: 'egg-alinode',
+};
 // had enabled by egg
 // exports.static = true;
